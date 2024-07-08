@@ -86,6 +86,7 @@ const App = () => {
         </nav>
         <div className="tab-content mt-3">
           <Routes>
+            <Route path="/" element={<Principal />} />
             <Route path="/tabla" element={<Tabla />} />
             <Route path="/agregar" element={
               <AgregarUsuario 
@@ -112,6 +113,14 @@ const App = () => {
     </Router>
   );
 };
+
+const Principal = () => {
+  return (
+    <div>
+    <h1>hoal</h1>
+    </div
+  );
+}
 
 const Tabla = () => {
   const [userList, setUserList] = useState([]);
