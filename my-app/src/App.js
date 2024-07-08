@@ -66,29 +66,29 @@ const App = () => {
     <Router>
       <div className="container">
         <nav className="navbar navbar-expand-lg navbar-light">
-          <Link className="navbar-brand" to="/">Contactos</Link>
+          <Link className="navbar-brand" to="/prb/">Contactos</Link>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/tabla">Tabla</Link>
+                <Link className="nav-link" to="/prb/tabla">Tabla</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/agregar">Agregar</Link>
+                <Link className="nav-link" to="/prb/agregar">Agregar</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/actualizar">Actualizar</Link>
+                <Link className="nav-link" to="/prb/actualizar">Actualizar</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/eliminar">Eliminar</Link>
+                <Link className="nav-link" to="/prb/eliminar">Eliminar</Link>
               </li>
             </ul>
           </div>
         </nav>
         <div className="tab-content mt-3">
           <Routes>
-            <Route path="/" element={<Principal />} />
-            <Route path="/tabla" element={<Tabla />} />
-            <Route path="/agregar" element={
+            <Route path="/prb/" element={<Principal />} />
+            <Route path="/prb/tabla" element={<Tabla />} />
+            <Route path="/prb/agregar" element={
               <AgregarUsuario 
                 formData={addFormData} 
                 handleInputChange={(e) => handleInputChange(e, setAddFormData)} 
@@ -97,7 +97,7 @@ const App = () => {
                 handleFetchRandomUser={() => handleFetchRandomUser(setAddFormData)}
               />} 
             />
-            <Route path="/actualizar" element={
+            <Route path="/prb/actualizar" element={
               <Actualizar 
                 formData={updateFormData} 
                 setFormData={setUpdateFormData} 
@@ -106,7 +106,7 @@ const App = () => {
                 handleSave={() => handleSave(updateFormData, setUpdateFormData)} 
               />} 
             />
-            <Route path="/eliminar" element={<Eliminar />} />
+            <Route path="/prb/eliminar" element={<Eliminar />} />
           </Routes>
         </div>
       </div>
