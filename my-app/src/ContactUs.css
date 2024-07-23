@@ -1,0 +1,26 @@
+/* src/ContactUs.css */
+.container {
+    padding: 2% 5% 3% 5%;
+    background-color: wheat;
+    border-radius: 5px;
+    margin: 2% 12% 3% 12%;
+    text-align: center;
+  }
+  
+  .container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .container p {
+    margin-bottom: 10px;
+  }
+  
+  .container a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .container a:hover {
+    text-decoration: underline;
+  }
+  

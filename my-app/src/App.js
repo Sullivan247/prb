@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import InputPers from './componentes/inputs.js';
-import DynamicSelect from './componentes/selects.js';
-import DynamicButton from './componentes/botones.js';
-import optionsData from './DatosComunas.json';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
+
+import InputPers from './componentes/inputs';
+import DynamicSelect from './componentes/selects';
+import DynamicButton from './componentes/botones';
+import optionsData from './DatosComunas.json';
+import Header from './componentes/headers.js';
+import Footer from './componentes/footer';
+import Home from './componentes/home.js';
+import ContactUs from './componentes/ContactUs.js';
 
 const App = () => {
   const initialFormData = {
@@ -17,7 +22,7 @@ const App = () => {
     telefono: '',
     celular: '',
     direccion: '',
-    comuna: '' // Agregamos comuna al estado
+    comuna: ''
   };
 
   const [addFormData, setAddFormData] = useState(initialFormData);
@@ -28,7 +33,20 @@ const App = () => {
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
+  const validateFormData = (formData) => {
+    for (const key in formData) {
+      if (key !== 'id' && formData[key].trim() === '') {
+        alert(`El campo ${key} es obligatorio.`);
+        return false;
+      }
+    }
+    return true;
+  };
+  
+
   const handleSave = (formData, setFormData) => {
+    if (!validateFormData(formData)) return;
+
     const storedData = JSON.parse(localStorage.getItem('userList')) || [];
     const newUser = { id: storedData.length + 1, ...formData };
     storedData.push(newUser);
@@ -64,31 +82,13 @@ const App = () => {
 
   return (
     <Router>
-      <div className="container">
-        <nav className="navbar navbar-expand-lg navbar-light">
-          <Link className="navbar-brand" to="/prb/">Contactos</Link>
-          <div className="collapse navbar-collapse">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to="/prb/tabla">Tabla</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/prb/agregar">Agregar</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/prb/actualizar">Actualizar</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/prb/eliminar">Eliminar</Link>
-              </li>
-            </ul>
-          </div>
-        </nav>
-        <div className="tab-content mt-3">
+      <div className="app-container">
+        <Header />
+        <div className="content">
           <Routes>
-            <Route path="/prb/" element={<Principal />} />
-            <Route path="/prb/tabla" element={<Tabla />} />
-            <Route path="/prb/agregar" element={
+            <Route path="/" element={<Home />} />
+            <Route path="/tabla" element={<Tabla />} />
+            <Route path="/agregar" element={
               <AgregarUsuario 
                 formData={addFormData} 
                 handleInputChange={(e) => handleInputChange(e, setAddFormData)} 
@@ -97,34 +97,30 @@ const App = () => {
                 handleFetchRandomUser={() => handleFetchRandomUser(setAddFormData)}
               />} 
             />
-            <Route path="/prb/actualizar" element={
+            <Route path="/actualizar" element={
               <Actualizar 
                 formData={updateFormData} 
                 setFormData={setUpdateFormData} 
                 handleInputChange={(e) => handleInputChange(e, setUpdateFormData)} 
                 initialFormData={initialFormData} 
                 handleSave={() => handleSave(updateFormData, setUpdateFormData)} 
+                validateFormData={validateFormData}
               />} 
             />
-            <Route path="/prb/eliminar" element={<Eliminar />} />
+            <Route path="/eliminar" element={<Eliminar />} />
+            <Route path="/contactanos" element={<ContactUs />} />
           </Routes>
         </div>
+        <Footer />
       </div>
     </Router>
   );
 };
 
-const Principal = () => {
-  return (
-    <div>
-    <h1>hoal</h1>
-    </div
-  );
-}
-
 const Tabla = () => {
   const [userList, setUserList] = useState([]);
   const [comunas, setComunas] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('userList')) || [];
@@ -137,6 +133,20 @@ const Tabla = () => {
     return comuna ? comuna.nombre : '';
   };
 
+  const handleSearchInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredUsers = userList.filter(user => 
+    user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.telefono.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.celular.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getComunaNombre(user.comuna).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container" id="Modulo1">
       <div className="row">
@@ -146,12 +156,8 @@ const Tabla = () => {
               <hr/>
             <div className="row mb-4">
               <div className="col-sm-4">
-                <label htmlFor="TipoBusqueda" className="form-label">Buscar Usuario</label>
-                <DynamicSelect selectType="usuarios" />
-              </div>
-              <div className="col-sm-4">
                 <label htmlFor="exampleFormControlInput1" className="form-label">Buscar Usuario</label>
-                <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="" />
+                <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="" onChange={handleSearchInputChange} />
               </div>
             </div>
             <div className="row">
@@ -170,7 +176,7 @@ const Tabla = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {userList.map((user, index) => (
+                    {filteredUsers.map((user, index) => (
                       <tr key={index}>
                         <th scope="row">{user.id}</th>
                         <td>{user.nombre}</td>
@@ -192,6 +198,8 @@ const Tabla = () => {
     </div>
   );
 };
+
+
 
 const AgregarUsuario = ({ formData, handleInputChange, handleSave, handleClear, handleFetchRandomUser }) => (
   <div className="container" id="Modulo1">
@@ -284,7 +292,7 @@ const AgregarUsuario = ({ formData, handleInputChange, handleSave, handleClear, 
   </div>
 );
 
-const Actualizar = ({ formData, setFormData, handleInputChange, initialFormData, handleSave }) => {
+const Actualizar = ({ formData, setFormData, handleInputChange, initialFormData, handleSave, validateFormData }) => {
   const [userList, setUserList] = useState([]);
 
   useEffect(() => {
@@ -301,6 +309,8 @@ const Actualizar = ({ formData, setFormData, handleInputChange, initialFormData,
   };
 
   const handleUpdate = () => {
+    if (!validateFormData(formData)) return;
+
     const updatedList = userList.map(user => 
       user.id === formData.id ? formData : user
     );
